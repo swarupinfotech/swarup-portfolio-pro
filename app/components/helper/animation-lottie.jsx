@@ -1,19 +1,28 @@
-"use client"
+"use client";
 
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-const AnimationLottie = ({ animationPath, width }) => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationPath,
-    style: {
-      width: '95%',
-    }
-  };
+// Dynamically import Lottie with SSR disabled
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+const AnimationLottie = ({ animationPath, width = "95%" }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure this runs only on the client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null; // Prevents hydration mismatch
 
   return (
-    <Lottie {...defaultOptions} />
+    <Lottie
+      animationData={animationPath}
+      loop={true}
+      autoplay={true}
+      style={{ width }}
+    />
   );
 };
 
